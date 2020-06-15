@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace flexington.CaveGenerator
 {
-    using System;
-    using System.Collections.Generic;
-    using UnityEngine;
-
-    [CreateAssetMenu(fileName = "Cave", menuName = "flexington/CaveGenerator/new Cave", order = 0)]
+    [CreateAssetMenu(fileName = "Cave", menuName = "flexington/CaveGenerator/New Cave", order = 0)]
     public class CaveObject : ScriptableObject
     {
         [SerializeField] private Vector2Int _size;
@@ -20,10 +20,10 @@ namespace flexington.CaveGenerator
             set { _seed = value; }
         }
 
-        [SerializeField, Range(0, 100)] private int _fillPercent;
-        public int FillPercent
+        [SerializeField, Range(0, 100)] private int _fillThreshold;
+        public int FillThreshold
         {
-            get { return _fillPercent; }
+            get { return _fillThreshold; }
         }
 
         [Range(1, 15)]
@@ -55,17 +55,24 @@ namespace flexington.CaveGenerator
             set { _pathRadius = value; }
         }
 
-
         private int[,] _map;
         private bool[,] _regionFlags;
+        System.Random _rng;
 
-        public int[,] Generate()
+        public Cave Generate(string seed = null)
         {
             _map = new int[Size.x, Size.y];
             _regionFlags = new bool[Size.x, Size.y];
 
+            if (string.IsNullOrEmpty(seed))
+            {
+                if (string.IsNullOrEmpty(_seed)) seed = Time.time.ToString();
+                else seed = _seed;
+            }
+            _rng = new System.Random(seed.GetHashCode());
+
             FillMap();
-            SmoothMap();
+            Smooth();
 
             FilterRegions(1, 0);
             Vector2Int[][] regions = FilterRegions(0, 1);
@@ -74,39 +81,57 @@ namespace flexington.CaveGenerator
 
             FilterRegions(1, 0);
 
-            for (int i = 0; i < _smoothingIterations; i++) SmoothMap();
+            for (int i = 1; i < _smoothingIterations; i++) Smooth();
 
-
-            return _map;
+            return new Cave(_map, _size);
         }
 
         private void FillMap()
         {
-            string seed = string.Empty;
-            if (string.IsNullOrEmpty(_seed)) seed = Time.time.ToString();
-            else seed = _seed;
-
-            System.Random rng = new System.Random(seed.GetHashCode());
-
             for (int y = 0; y < Size.y; y++)
             {
                 for (int x = 0; x < Size.x; x++)
                 {
-                    _map[x, y] = (rng.Next(0, 100) < FillPercent) ? 1 : 0; ;
+                    if (isBorder(x, y)) _map[x, y] = 1;
+                    else _map[x, y] = (_rng.Next(0, 100) < FillThreshold) ? 1 : 0; ;
                 }
             }
         }
 
-        private void SmoothMap()
+        private void Smooth()
         {
-            for (int y = 0; y < Size.y; y++)
+            Vector2Int min = new Vector2Int(Size.x / 3, Size.y / 3);
+            Vector2Int max = min * 2;
+
+            int startX = _rng.Next(min.x, max.x);
+            int startY = _rng.Next(min.y, max.y);
+
+            bool[,] isQueued = new bool[Size.x, Size.y];
+
+            Queue<Vector2Int> queue = new Queue<Vector2Int>();
+            queue.Enqueue(new Vector2Int(startX, startY));
+
+            while (queue.Count > 0)
             {
-                for (int x = 0; x < Size.x; x++)
+                Vector2Int tile = queue.Dequeue();
+
+                for (int y = tile.y - 1; y <= tile.y + 1; y++)
                 {
-                    int wallCount = GetWalls(x, y);
-                    if (wallCount > _smoothingThreshold) _map[x, y] = 1;
-                    else if (wallCount < _smoothingThreshold) _map[x, y] = 0;
+                    for (int x = tile.x - 1; x <= tile.x + 1; x++)
+                    {
+                        if (x == tile.x && y == tile.y) continue;
+                        if (!IsInMap(x, y) || isQueued[x, y]) continue;
+                        if (isBorder(x, y)) continue;
+                        if (x != tile.x && y != tile.y) continue;
+                        queue.Enqueue(new Vector2Int(x, y));
+                        isQueued[x, y] = true;
+
+                    }
                 }
+
+                int wallCount = GetWalls(tile.x, tile.y);
+                if (wallCount > _smoothingThreshold) _map[tile.x, tile.y] = 1;
+                else if (wallCount < _smoothingThreshold) _map[tile.x, tile.y] = 0;
             }
         }
 
@@ -308,6 +333,11 @@ namespace flexington.CaveGenerator
             return result.ToArray();
         }
 
+        private void CheckExit()
+        {
+
+        }
+
         public void ApplyPath(Vector2Int[] path)
         {
             for (int i = 0; i < path.Length; i++)
@@ -321,20 +351,24 @@ namespace flexington.CaveGenerator
                         int pathX = tile.x + x;
                         int pathY = tile.y + y;
                         if (!IsInMap(pathX, pathY)) continue;
+                        if (isBorder(x, y)) continue;
                         _map[pathX, pathY] = 0;
 
                     }
                 }
             }
-
-
-
-
         }
 
         private bool IsInMap(int x, int y)
         {
             return x >= 0 && x < Size.x && y >= 0 && y < Size.y;
         }
+
+        private bool isBorder(int x, int y)
+        {
+            return (x == 0 || x == Size.x - 1 || y == 0 || y == Size.y - 1);
+        }
     }
+
+
 }
