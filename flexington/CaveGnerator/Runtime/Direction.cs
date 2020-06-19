@@ -1,8 +1,10 @@
 namespace flexington.CaveGenerator
 {
+    /// <summary>
+    /// Represents possible directions 
+    /// </summary>
     public enum Direction
     {
-        None,
         Top,
         Right,
         Bottom,

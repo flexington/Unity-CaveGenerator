@@ -2,24 +2,58 @@ using UnityEngine;
 
 namespace flexington.CaveGenerator
 {
+    /// <summary>
+    /// Represents the exists of a cave
+    /// </summary>
     public class Exit
     {
-        private Direction _direction;
-        public Direction Direction
+        /// <summary>
+        /// Positions forming the top exit
+        /// </summary>
+        public int[] Top { get; set; }
+
+        /// <summary>
+        /// Positions forming the right exit
+        /// </summary>
+        public int[] Right { get; set; }
+
+        /// <summary>
+        /// Positions forming the bottom exit
+        /// </summary>
+        public int[] Bottom { get; set; }
+
+        /// <summary>
+        /// Positions forming the left exit
+        /// </summary>
+        public int[] Left { get; set; }
+
+        /// <summary>
+        /// Creates a new Exit object
+        /// </summary>
+        public Exit()
         {
-            get { return _direction; }
         }
 
-        private Vector2Int[] _tiles;
-        public Vector2Int[] Tiles
+        /// <summary>
+        /// Creates a new Exit object
+        /// </summary>
+        public Exit(Exit exit)
         {
-            get { return _tiles; }
+            Top = exit.Top;
+            Right = exit.Right;
+            Bottom = exit.Bottom;
+            Left = exit.Left;
         }
 
-        public Exit(Direction direction, Vector2Int[] tiles)
+        /// <summary>
+        /// Creates a new Exit object
+        /// </summary>
+        public Exit(int[] top, int[] right, int[] bottom, int[] left)
         {
-            _tiles = tiles;
-            _direction = direction;
+            Top = top;
+            Right = right;
+            Bottom = bottom;
+            Left = left;
         }
     }
 }
