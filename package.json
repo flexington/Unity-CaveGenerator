@@ -1,0 +1,16 @@
+{
+    "name": "com.flexington.cavegenerator",
+    "version": "0.1.0",
+    "displayName": "Cave Generator",
+    "description": "Package to procedurally create caves",
+    "unity": "2019.4",
+    "keywords": [
+        "Cave",
+        "Procedural"
+    ],
+    "author": {
+        "name": "Sandro Paetzold",
+        "email": "unity@flexington.uk",
+        "url": "https://www.flexington.uk"
+    }
+}
