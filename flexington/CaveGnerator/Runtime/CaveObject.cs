@@ -123,9 +123,9 @@ namespace flexington.CaveGenerator
         /// </summary>
         private void FillMap()
         {
-            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
             {
-                for (int x = 0; x < Size.x; x++)
+                for (int y = 0; y < Size.y; y++)
                 {
                     if (isBorder(x, y)) _map[x, y] = 1;
                     else _map[x, y] = (_rng.Next(0, 100) < FillThreshold) ? 1 : 0; ;
@@ -153,9 +153,9 @@ namespace flexington.CaveGenerator
             {
                 Vector2Int tile = queue.Dequeue();
 
-                for (int y = tile.y - 1; y <= tile.y + 1; y++)
+                for (int x = tile.x - 1; x <= tile.x + 1; x++)
                 {
-                    for (int x = tile.x - 1; x <= tile.x + 1; x++)
+                    for (int y = tile.y - 1; y <= tile.y + 1; y++)
                     {
                         if (x == tile.x && y == tile.y) continue;
                         if (!IsInMap(x, y) || isQueued[x, y]) continue;
@@ -179,9 +179,9 @@ namespace flexington.CaveGenerator
         {
             int count = 0;
 
-            for (int y = originY - 1; y <= originY + 1; y++)
+            for (int x = originX - 1; x <= originX + 1; x++)
             {
-                for (int x = originX - 1; x <= originX + 1; x++)
+                for (int y = originY - 1; y <= originY + 1; y++)
                 {
                     if (x == originX && y == originY) continue;
                     if (!IsInMap(x, y)) count++;
@@ -226,9 +226,9 @@ namespace flexington.CaveGenerator
         {
             List<Vector2Int[]> regions = new List<Vector2Int[]>();
 
-            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
             {
-                for (int x = 0; x < Size.x; x++)
+                for (int y = 0; y < Size.y; y++)
                 {
                     if (_regionFlags[x, y] || _map[x, y] != tileType) continue;
                     regions.Add(GetRegion(x, y));
@@ -267,9 +267,9 @@ namespace flexington.CaveGenerator
                 Vector2Int tile = queue.Dequeue();
                 region.Add(tile);
 
-                for (int y = tile.y - 1; y <= tile.y + 1; y++)
+                for (int x = tile.x - 1; x <= tile.x + 1; x++)
                 {
-                    for (int x = tile.x - 1; x <= tile.x + 1; x++)
+                    for (int y = tile.y - 1; y <= tile.y + 1; y++)
                     {
                         if (!IsInMap(x, y) || (x != tile.x && y != tile.y)) continue;
                         if (_regionFlags[x, y] || _map[x, y] != tileType) continue;
@@ -346,9 +346,9 @@ namespace flexington.CaveGenerator
             for (int i = 0; i < region.Length; i++)
             {
                 Vector2Int tile = region[i];
-                for (int y = tile.y - 1; y <= tile.y + 1; y++)
+                for (int x = tile.x - 1; x <= tile.x + 1; x++)
                 {
-                    for (int x = tile.x - 1; x <= tile.x + 1; x++)
+                    for (int y = tile.y - 1; y <= tile.y + 1; y++)
                     {
                         if (IsInMap(x, y) && (x == tile.x || y == tile.y) && _map[x, y] == 1)
                         {
@@ -500,9 +500,9 @@ namespace flexington.CaveGenerator
             {
                 Vector2Int tile = path[i];
 
-                for (int y = -_pathRadius; y <= _pathRadius; y++)
+                for (int x = -_pathRadius; x <= _pathRadius; x++)
                 {
-                    for (int x = -_pathRadius; x <= _pathRadius; x++)
+                    for (int y = -_pathRadius; y <= _pathRadius; y++)
                     {
                         if (x * x + y * y > _pathRadius * _pathRadius) continue;
                         int pathX = tile.x + x;

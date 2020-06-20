@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using flexington.Tools;
 
 namespace flexington.CaveGenerator
 {
@@ -82,25 +79,25 @@ namespace flexington.CaveGenerator
             int offsetX = 0;
             int offsetY = 0;
 
-            for (int my = 0; my < _mapSize.y; my++)
+            for (int mx = 0; mx < _mapSize.x; mx++)
             {
-                for (int mx = 0; mx < _mapSize.x; mx++)
+                for (int my = 0; my < _mapSize.y; my++)
                 {
                     Cave cave = _caves[mx, my];
 
-                    for (int y = 0; y < cave.Size.y; y++)
+                    for (int x = 0; x < cave.Size.x; x++)
                     {
-                        for (int x = 0; x < cave.Size.x; x++)
+                        for (int y = 0; y < cave.Size.y; y++)
                         {
                             if (cave.Map[x, y] == 0) Gizmos.color = Color.white;
                             else Gizmos.color = Color.black;
                             Gizmos.DrawCube(new Vector3(x + offsetX, y + offsetY, 0), Vector3.one);
                         }
                     }
-                    offsetX += 50;
+                    offsetY += 50;
                 }
-                offsetY += 50;
-                offsetX = 0;
+                offsetX += 50;
+                offsetY = 0;
             }
         }
     }
