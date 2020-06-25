@@ -339,7 +339,7 @@ namespace flexington.CaveGenerator
         /// <summary>
         /// Returns the border tiles of the given region.
         /// </summary>
-        private Vector2Int[] GetRegionBorder(Vector2Int[] region)
+        private Vector2Int[] GetRegionBorder(Vector2Int[] region, bool diagonal = false)
         {
             List<Vector2Int> result = new List<Vector2Int>();
 
@@ -350,10 +350,10 @@ namespace flexington.CaveGenerator
                 {
                     for (int y = tile.y - 1; y <= tile.y + 1; y++)
                     {
-                        if (IsInMap(x, y) && (x == tile.x || y == tile.y) && _map[x, y] == 1)
-                        {
-                            result.Add(tile);
-                        }
+                        if (!IsInMap(x, y)) continue;
+                        if ((x != tile.x && y != tile.y) && !diagonal) continue;
+                        if (_map[x, y] == 1) continue;
+                        result.Add(tile);
                     }
                 }
             }
